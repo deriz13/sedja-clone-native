@@ -1,0 +1,56 @@
+## TODO:
+
+- [x] Upload PDF and show in canvas
+- [ ] Make menu can selected (Text, Links, Forms, Images, Sign, Witheout, Annotate, Shapes, More)
+- [ ] Text | Add Text at mouse position
+- [ ] Text | Move and Edit Text already add
+- [ ] Text | action text (bold, italic, font size, font name, color, convert to link, delete) *
+- [ ] Link | Add Link at mouse position
+- [ ] Link | rectangle link can draw by mouse
+- [ ] Link | resize rectangle link shape
+- [ ] Link | option link type (external, email, phone, internal)*
+- [ ] Link | action delete link *
+- [ ] Forms | Add non interactive font (text & symbol (x, v, .))
+- [ ] Forms | action non interactive symbol (rotate, delete)*
+- [ ] Forms | Add textbox
+- [ ] Forms | edit size textbox, input text on textbox
+- [ ] Forms | Action textbox (border color, text alignment, font size, field properties, duplicate, delete)*
+- [ ] Forms | Add textarea
+- [ ] Forms | edit size textarea, input text on textarea
+- [ ] Forms | Action textarea (border color, text alignment, font size, field properties, duplicate, delete)*
+- [ ] Forms | Add radio
+- [ ] Forms | edit size radio, selected on radio
+- [ ] Forms | Action radio (border color, field properties, duplicate, delete)*
+- [ ] Forms | Add checkbox
+- [ ] Forms | edit size checkbox, selected on checkbox
+- [ ] Forms | Action checkbox (border color, field properties, duplicate, delete)*
+- [ ] Forms | Add dropdown
+- [ ] Forms | edit size dropdown, selected option on dropdown
+- [ ] Forms | Action dropdown (border color, text alignment, font size, field properties, duplicate, delete)*
+- [ ] Images | Add image placeholder  
+- [ ] Images | Add upload image
+- [ ] Images | List uploaded image, and placeholder with delete
+- [ ] Images | edit size image
+- [ ] Images | action image (rotate, delete)
+- [ ] Sign | Add image sign placeholder  
+- [ ] Sign | Add new signature* | New Signature menu (Type, Draw, upload image, camera)
+- [ ] Sign | List created signature, and placeholder signature with delete
+- [ ] Sign | edit size signature
+- [ ] Sign | action signature (rotate, delete)
+- [ ] Witheout | rectangle white can draw by mouse
+- [ ] Witheout | resize rectangle white shape
+- [ ] Witheout | action witheout (border width, border color,background color, duplicate, delete) *
+- [ ] Anotate | Strike out, highlight, underline
+- [ ] Anotate | Strike out, highlight, underline action (change color, hide all anotations, remove)*
+- [ ] Anotate | highlight free hand, draw
+- [ ] Anotate | highlight free hand, draw action (line width, change color, hide all anotations, remove)*
+- [ ] Anotate | Hide annotations
+- [ ] Shapes | draw ellipse, rectangle
+- [ ] Shapes | ellipse, rectangle action (border width, border color, background color, duplicate, delete)*
+- [ ] Shapes | draw line, arrow
+- [ ] Shapes | line, arrow action (line width, color, duplicate, delete)
+- [ ] More | Find & Replace
+- [ ] More | Undo
+- [ ] PDF can save to server and can access by unique link
+- [ ] PDF can add "sign container"
+- [ ] PDF saved can add signature by click at "sign container"
