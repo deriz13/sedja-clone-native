@@ -6,12 +6,60 @@
 		canvas {
 			border: 1px solid black;
 		}
+		.btn-menu {
+			display: inline-block;
+			padding: 10px;
+			margin-right: 10px;
+			font-size: 16px;
+			border: none;
+			border-radius: 5px;
+			background-color: #eee;
+			color: #333;
+			cursor: pointer;
+		}
+
+		.btn-menu.active {
+			background-color: #333;
+			color: #fff;
+		}
 	</style>
 </head>
 <body>
 	<input type="file" id="pdf-file" accept="application/pdf"><br><br>
+  <div>
+    <button class="btn-menu" value="text">Text</button>
+    <button class="btn-menu" value="links">Links</button>
+    <button class="btn-menu" value="forms">Forms</button>
+    <button class="btn-menu" value="images">Images</button>
+    <button class="btn-menu" value="sign">Sign</button>
+    <button class="btn-menu" value="witheout">Witheout</button>
+    <button class="btn-menu" value="anotate">Anotate</button>
+    <button class="btn-menu" value="shapes">Shapes</button>
+    <button class="btn-menu" value="more">More</button>
+  </div><br>
+  <input type="text" name="selected" id="selected" readonly><br><br>
 	<canvas id="pdf-canvas"></canvas>
 
+  <script>
+    const menu = document.querySelectorAll('.btn-menu');
+
+    menu.forEach(item => {
+      item.addEventListener('click', () => {
+        if (!item.classList.contains('active')) {
+          menu.forEach(btn => {
+            btn.classList.remove('active');
+          });
+          item.classList.add('active');
+          document.querySelector('#selected').value = item.value;
+        } else {
+          item.classList.remove('active');
+          document.querySelector('#selected').value = "";
+        }
+      
+        console.log(item.value);
+      });
+    });
+  </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
 	<script src="main.js"></script>
 </body>

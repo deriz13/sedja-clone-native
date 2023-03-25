@@ -1,7 +1,7 @@
 ## TODO:
 
 - [x] Upload PDF and show in canvas
-- [ ] Make menu can selected (Text, Links, Forms, Images, Sign, Witheout, Annotate, Shapes, More)
+- [x] Make menu can selected (Text, Links, Forms, Images, Sign, Witheout, Annotate, Shapes, More)
 - [ ] Text | Add Text at mouse position
 - [ ] Text | Move and Edit Text already add
 - [ ] Text | action text (bold, italic, font size, font name, color, convert to link, delete) *
