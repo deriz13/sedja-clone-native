@@ -24,3 +24,8 @@ pdfFile.addEventListener('change', function() {
 
 	fileReader.readAsArrayBuffer(file);
 });
+
+const selected = document.getElementById('selected');
+selected.addEventListener('input', function() {
+  alert(selected.value)
+});
