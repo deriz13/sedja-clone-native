@@ -2,9 +2,9 @@
 
 - [x] Upload PDF and show in canvas
 - [x] Make menu can selected (Text, Links, Forms, Images, Sign, Witheout, Annotate, Shapes, More)
-- [ ] Text | Add Text at mouse position
+- [x] Text | Add Text at mouse position
 - [ ] Text | Move and Edit Text already add
-- [ ] Text | action text (bold, italic, font size, font name, color, convert to link, delete) *
+- [x] Text | action text (bold, italic, font size, font name, color, convert to link, delete)
 - [ ] Link | Add Link at mouse position
 - [ ] Link | rectangle link can draw by mouse
 - [ ] Link | resize rectangle link shape
