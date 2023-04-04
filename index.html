@@ -2,27 +2,7 @@
 <html>
 <head>
 	<title>Upload dan Tampil PDF di Canvas</title>
-	<style>
-		canvas {
-			border: 1px solid black;
-		}
-		.btn-menu {
-			display: inline-block;
-			padding: 10px;
-			margin-right: 10px;
-			font-size: 16px;
-			border: none;
-			border-radius: 5px;
-			background-color: #eee;
-			color: #333;
-			cursor: pointer;
-		}
-
-		.btn-menu.active {
-			background-color: #333;
-			color: #fff;
-		}
-	</style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 	<input type="file" id="pdf-file" accept="application/pdf"><br><br>
@@ -38,29 +18,17 @@
     <button class="btn-menu" value="more">More</button>
   </div><br>
   <input type="text" name="selected" id="selected" readonly><br><br>
-	<canvas id="pdf-canvas"></canvas>
+  
+  <div id="action"></div>
 
-  <script>
-    const menu = document.querySelectorAll('.btn-menu');
+  <div style="position: relative;">
+    <canvas id="pdf-canvas" style="position: absolute; left: 0; top: 0; z-index: 0;"></canvas>
+    <canvas id="item-canvas" style="position: absolute; left: 0; top: 0; z-index: 1;"></canvas>
+  </div>
 
-    menu.forEach(item => {
-      item.addEventListener('click', () => {
-        if (!item.classList.contains('active')) {
-          menu.forEach(btn => {
-            btn.classList.remove('active');
-          });
-          item.classList.add('active');
-          document.querySelector('#selected').value = item.value;
-        } else {
-          item.classList.remove('active');
-          document.querySelector('#selected').value = "";
-        }
-      
-        console.log(item.value);
-      });
-    });
-  </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
-	<script src="main.js"></script>
+  <script src="menu.js"></script>
+  <script src="text.js"></script>
+  <script src="main.js"></script>
 </body>
 </html>

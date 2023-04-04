@@ -55,6 +55,7 @@ var editingItem = null;
 
 // Mendefinisikan fungsi untuk mengedit teks
 function editText(item) {
+  showTextSettings();
   var text = prompt("Edit teks:", item.text);
   if (text != null) {
     item.text = text;
