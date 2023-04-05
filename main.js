@@ -7,6 +7,10 @@ var settingsPanel = document.getElementById('action');
 // const selectedMenu = document.getElementById('selected').value;
 var items = [];
 var editingItem = null;
+var mouse = {
+	x: 0,
+	y: 0,
+};
 
 pdfFile.addEventListener('change', function() {
 	const file = pdfFile.files[0];
@@ -62,6 +66,65 @@ itemCanvas.addEventListener('click', function(event) {
 	}
 	hideSettings();
 });
+
+itemCanvas.addEventListener("mousedown", function (evt) {
+    mouse = getMousePos(itemCanvas, evt);
+    checkForSelectedItem();
+    itemCanvas.addEventListener("mousemove", moveSelectedItem(evt));
+  },
+  false
+);
+
+itemCanvas.addEventListener("mouseup", function (evt) {
+    itemCanvas.removeEventListener("mousemove", moveSelectedItem(evt));
+  },
+  false
+);
+
+function getMousePos(canvas, evt) {
+	var rect = canvas.getBoundingClientRect();
+	return {
+	  x: evt.clientX - rect.left,
+	  y: evt.clientY - rect.top,
+	};
+}
+
+function checkForSelectedItem() {
+	for (var i = items.length - 1; i >= 0; i--) {
+	  var item = items[i];
+	  var x = item.x;
+	  // var y = item.y - parseInt(item.fontSize);
+	  var y = item.y;
+	  var width = itemContext.measureText(item.text).width;
+	  var height = parseInt(item.fontSize);
+	  if (
+		mouse.x >= x &&
+		mouse.x <= x + width &&
+		mouse.y >= y &&
+		mouse.y <= y + height
+	  ) {
+		editingItem = item;
+		return;
+	  }
+	}
+	editingItem = null;
+}
+
+function moveSelectedItem(evt) {
+	var mousePos = getMousePos(itemCanvas, evt);
+	var dx = mousePos.x - mouse.x;
+	var dy = mousePos.y - mouse.y;
+  
+	if (editingItem) {
+	  // selectedTextItem.x = mouse.x;
+	  // selectedTextItem.y = mouse.y;
+	  editingItem.x += dx;
+	  editingItem.y += dy;
+	  mouse.x = mousePos.x;
+	  mouse.y = mousePos.y;
+	  drawItems();
+	}
+}
 
 function deleteItem() {
   var index = items.indexOf(editingItem);
