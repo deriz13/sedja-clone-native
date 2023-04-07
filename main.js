@@ -11,6 +11,8 @@ var mouse = {
 	x: 0,
 	y: 0,
 };
+var startX, startY, endX, endY;
+var isDrawing = false;
 
 pdfFile.addEventListener('change', function() {
 	const file = pdfFile.files[0];
@@ -45,16 +47,16 @@ itemCanvas.addEventListener('click', function(event) {
 	var x = event.offsetX;
 	var y = event.offsetY;
   for (var i = items.length - 1; i >= 0; i--) {
-		console.log(items)
+	console.log(items)
     var item = items[i];
     var itemX = item.x;
     var itemY = item.y;
     var itemWidth = itemContext.measureText(item.text).width;
     var itemHeight = parseInt(item.fontSize);
     if (x >= itemX && x <= itemX + itemWidth && y >= itemY && y <= itemY + itemHeight) {
-      editingItem = item;
-			showSettings(item);
-      return;
+      	editingItem = item;
+		showSettings(item);
+      	return;
     }
   }
 	if (selectedMenu == "text") {
@@ -62,24 +64,108 @@ itemCanvas.addEventListener('click', function(event) {
 		if (itemText) {
 			items.push(itemText);
 		}
-    drawItems();
+    	drawItems();
 	}
 	hideSettings();
 });
 
 itemCanvas.addEventListener("mousedown", function (evt) {
-    mouse = getMousePos(itemCanvas, evt);
+    const selectedMenu = document.getElementById('selected').value;
+	mouse = getMousePos(itemCanvas, evt);
     checkForSelectedItem();
-    itemCanvas.addEventListener("mousemove", moveSelectedItem(evt));
-  },
-  false
-);
+
+	if (selectedMenu == "links") {
+		startDraw(evt);
+	}
+	if (editingItem) {
+		itemCanvas.addEventListener("mousemove", moveSelectedItem(evt));
+	} else {
+		itemCanvas.addEventListener("mousemove", draw(evt));
+	}
+  }, false);
 
 itemCanvas.addEventListener("mouseup", function (evt) {
-    itemCanvas.removeEventListener("mousemove", moveSelectedItem(evt));
-  },
-  false
-);
+	const selectedMenu = document.getElementById('selected').value;
+
+	if (editingItem) {
+		itemCanvas.addEventListener("mousemove", moveSelectedItem(evt));
+	} else {
+		itemCanvas.addEventListener("mousemove", draw(evt));
+	}
+	if (selectedMenu == "links") {
+		endDraw(evt);
+	}
+}, false);
+
+function startDraw(e) {
+	startX = e.offsetX;
+	startY = e.offsetY;
+	isDrawing = true;
+}
+
+function draw(e) {
+	if (!isDrawing) return;
+	itemContext.beginPath();
+}
+
+function endDraw(e) {
+	const selectedMenu = document.getElementById('selected').value;
+	
+	endX = e.offsetX;
+	endY = e.offsetY;
+	var width = endX - startX;
+	var height = endY - startY;
+	itemContext.rect(startX, startY, width, height);
+	itemContext.stroke();
+	isDrawing = false;
+	// drawLinks();
+	if (selectedMenu == "links") {
+		var item = {
+			x: startX,
+			y: startY,
+			width: endX - startX, 
+			height: endY - startY, 
+			link_type: "external", 
+			link: "",
+			type: "links",
+		};
+		items.push(item);
+		drawItems();
+	}
+}
+
+function drawLinks() {
+	// ctx.clearRect(0, 0, itemCanvas.width, itemCanvas.height);
+	// for (var i = 0; i < links.length; i++) {
+	// var link = links[i];
+	// ctx.beginPath();
+	// ctx.rect(link.x, link.y, link.width, link.height);
+	// ctx.fillStyle = "rgba(0, 0, 255, 0.1)";
+	// ctx.fill();
+	// ctx.strokeStyle = "blue";
+	// ctx.stroke();
+	// if (link.type === "external") {
+	// ctx.font = "12px Arial";
+	// ctx.fillStyle = "blue";
+	// ctx.fillText("External Link", link.x + 5, link.y + 15);
+	// ctx.fillText(link.url, link.x + 5, link.y + 30);
+	// } else if (link.type === "email") {
+	// ctx.font = "12px Arial";
+	// ctx.fillStyle = "blue";
+	// ctx.fillText("Email Link", link.x + 5, link.y + 15);
+	// ctx.fillText(link.url, link.x + 5, link.y + 30);
+	// } else if (link.type === "phone") {
+	// ctx.font = "12px Arial";
+	// ctx.fillStyle = "blue";
+	// ctx.fillText("Phone Link", link.x + 5, link.y + 15);
+	// ctx.fillText(link.url, link.x + 5, link.y + 30);
+	// } else if (link.type === "pdf") {
+	// ctx.font = "12px Arial";
+	// ctx.fillStyle = "blue";
+	// ctx.fillText("Internal PDF Link", link.x + 5, link.y + 15);
+	// }
+	// }
+	}
 
 function getMousePos(canvas, evt) {
 	var rect = canvas.getBoundingClientRect();
@@ -155,6 +241,13 @@ function drawItems() {
 			itemContext.textBaseline = "top";
 			itemContext.textAlign = "left";
 			itemContext.fillText(item.text, item.x, item.y);
+		} else if (item.type == "links") {
+			itemContext.beginPath();
+			itemContext.rect(item.x, item.y, item.width, item.height);
+			itemContext.fillStyle = "rgba(0, 0, 255, 0.1)";
+			itemContext.fill();
+			itemContext.strokeStyle = "blue";
+			itemContext.stroke();
 		}
   }
 }
