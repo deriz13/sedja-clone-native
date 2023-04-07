@@ -3,13 +3,13 @@
 - [x] Upload PDF and show in canvas
 - [x] Make menu can selected (Text, Links, Forms, Images, Sign, Witheout, Annotate, Shapes, More)
 - [x] Text | Add Text at mouse position
-- [ ] Text | Move and Edit Text already add
+- [x] Text | Move and Edit Text already add
 - [x] Text | action text (bold, italic, font size, font name, color, convert to link, delete)
-- [ ] Link | Add Link at mouse position
-- [ ] Link | rectangle link can draw by mouse
-- [ ] Link | resize rectangle link shape
-- [ ] Link | option link type (external, email, phone, internal)*
-- [ ] Link | action delete link *
+- [x] Link | Add Link at mouse position
+- [x] Link | rectangle link can draw by mouse
+- [x] Link | resize rectangle link shape
+- [x] Link | option link type (external, email, phone, internal)*
+- [x] Link | action delete link *
 - [ ] Forms | Add non interactive font (text & symbol (x, v, .))
 - [ ] Forms | action non interactive symbol (rotate, delete)*
 - [ ] Forms | Add textbox

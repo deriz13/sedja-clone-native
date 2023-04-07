@@ -51,50 +51,59 @@ itemCanvas.addEventListener('click', function(event) {
     var item = items[i];
     var itemX = item.x;
     var itemY = item.y;
-    var itemWidth = itemContext.measureText(item.text).width;
-    var itemHeight = parseInt(item.fontSize);
+		if (item.type == "text") {
+			var itemWidth = itemContext.measureText(item.text).width;
+			var itemHeight = parseInt(item.fontSize);
+		} else if (item.type == "links") {
+			var itemWidth = item.width;
+			var itemHeight = item.height;
+		} else {
+			var itemWidth = 0
+			var itemHeight = 0;
+		}	
+
     if (x >= itemX && x <= itemX + itemWidth && y >= itemY && y <= itemY + itemHeight) {
-      	editingItem = item;
-		showSettings(item);
-      	return;
+			editingItem = item;
+			console.log(item.type);
+			hideSettings();
+			showSettings(item);
+      return;
     }
   }
 	if (selectedMenu == "text") {
-		const itemText = addText(x, y);
-		if (itemText) {
-			items.push(itemText);
-		}
-    	drawItems();
+		createItem("text", x, y);
+	} else if (selectedMenu == "links") {
+		return;
 	}
 	hideSettings();
 });
 
 itemCanvas.addEventListener("mousedown", function (evt) {
-    const selectedMenu = document.getElementById('selected').value;
+  const selectedMenu = document.getElementById('selected').value;
 	mouse = getMousePos(itemCanvas, evt);
-    checkForSelectedItem();
+  checkForSelectedItem();
 
-	if (selectedMenu == "links") {
-		startDraw(evt);
-	}
 	if (editingItem) {
 		itemCanvas.addEventListener("mousemove", moveSelectedItem(evt));
 	} else {
-		itemCanvas.addEventListener("mousemove", draw(evt));
+		if (selectedMenu == "links") {
+			startDraw(evt);
+		}
 	}
-  }, false);
+}, false);
+
+itemCanvas.addEventListener("mousemove", draw);
 
 itemCanvas.addEventListener("mouseup", function (evt) {
 	const selectedMenu = document.getElementById('selected').value;
-
 	if (editingItem) {
 		itemCanvas.addEventListener("mousemove", moveSelectedItem(evt));
 	} else {
-		itemCanvas.addEventListener("mousemove", draw(evt));
+		if (selectedMenu == "links") {
+			endDraw(evt);
+		}
 	}
-	if (selectedMenu == "links") {
-		endDraw(evt);
-	}
+
 }, false);
 
 function startDraw(e) {
@@ -105,67 +114,24 @@ function startDraw(e) {
 
 function draw(e) {
 	if (!isDrawing) return;
-	itemContext.beginPath();
+	endX = e.offsetX;
+	endY = e.offsetY;
+  var width = endX - startX;
+  var height = endY - startY;
+  itemContext.clearRect(0, 0, itemCanvas.width, itemCanvas.height);
+	drawItems();
+  itemContext.beginPath();
+  itemContext.rect(startX, startY, width, height);
+  itemContext.stroke();
 }
 
 function endDraw(e) {
 	const selectedMenu = document.getElementById('selected').value;
-	
-	endX = e.offsetX;
-	endY = e.offsetY;
-	var width = endX - startX;
-	var height = endY - startY;
-	itemContext.rect(startX, startY, width, height);
-	itemContext.stroke();
 	isDrawing = false;
-	// drawLinks();
 	if (selectedMenu == "links") {
-		var item = {
-			x: startX,
-			y: startY,
-			width: endX - startX, 
-			height: endY - startY, 
-			link_type: "external", 
-			link: "",
-			type: "links",
-		};
-		items.push(item);
-		drawItems();
+		showSettings({type: "links"});
 	}
 }
-
-function drawLinks() {
-	// ctx.clearRect(0, 0, itemCanvas.width, itemCanvas.height);
-	// for (var i = 0; i < links.length; i++) {
-	// var link = links[i];
-	// ctx.beginPath();
-	// ctx.rect(link.x, link.y, link.width, link.height);
-	// ctx.fillStyle = "rgba(0, 0, 255, 0.1)";
-	// ctx.fill();
-	// ctx.strokeStyle = "blue";
-	// ctx.stroke();
-	// if (link.type === "external") {
-	// ctx.font = "12px Arial";
-	// ctx.fillStyle = "blue";
-	// ctx.fillText("External Link", link.x + 5, link.y + 15);
-	// ctx.fillText(link.url, link.x + 5, link.y + 30);
-	// } else if (link.type === "email") {
-	// ctx.font = "12px Arial";
-	// ctx.fillStyle = "blue";
-	// ctx.fillText("Email Link", link.x + 5, link.y + 15);
-	// ctx.fillText(link.url, link.x + 5, link.y + 30);
-	// } else if (link.type === "phone") {
-	// ctx.font = "12px Arial";
-	// ctx.fillStyle = "blue";
-	// ctx.fillText("Phone Link", link.x + 5, link.y + 15);
-	// ctx.fillText(link.url, link.x + 5, link.y + 30);
-	// } else if (link.type === "pdf") {
-	// ctx.font = "12px Arial";
-	// ctx.fillStyle = "blue";
-	// ctx.fillText("Internal PDF Link", link.x + 5, link.y + 15);
-	// }
-	// }
-	}
 
 function getMousePos(canvas, evt) {
 	var rect = canvas.getBoundingClientRect();
@@ -181,8 +147,19 @@ function checkForSelectedItem() {
 	  var x = item.x;
 	  // var y = item.y - parseInt(item.fontSize);
 	  var y = item.y;
-	  var width = itemContext.measureText(item.text).width;
-	  var height = parseInt(item.fontSize);
+	  // var width = itemContext.measureText(item.text).width;
+	  // var height = parseInt(item.fontSize);
+		if (item.type == "text") {
+			var width = itemContext.measureText(item.text).width;
+			var height = parseInt(item.fontSize);
+		} else if (item.type == "links") {
+			var width = item.width;
+			var height = item.height;
+		} else {
+			var width = 0
+			var height = 0;
+		}	
+		
 	  if (
 		mouse.x >= x &&
 		mouse.x <= x + width &&
@@ -197,6 +174,7 @@ function checkForSelectedItem() {
 }
 
 function moveSelectedItem(evt) {
+	console.log("move")
 	var mousePos = getMousePos(itemCanvas, evt);
 	var dx = mousePos.x - mouse.x;
 	var dy = mousePos.y - mouse.y;
@@ -213,18 +191,38 @@ function moveSelectedItem(evt) {
 }
 
 function deleteItem() {
-  var index = items.indexOf(editingItem);
-  items.splice(index, 1);
-  drawItems();
-	editingItem = null;
-	hideSettings();
+	var confirmed = confirm("Are you sure you want to delete this item?");
+  if (confirmed) {
+		var index = items.indexOf(editingItem);
+  	items.splice(index, 1);
+  	drawItems();
+		editingItem = null;
+		hideSettings();
+	}
 }
 
 function showSettings(item) {
-	const selectedMenu = document.getElementById('selected').value;
-	if (selectedMenu == "text") {
+	// const selectedMenu = document.getElementById('selected').value;
+	if (item.type == "text") {
 		settingsPanel.innerHTML = generateTextSettings(item);
+	} else if (item.type == "links") {
+		settingsPanel.innerHTML = generateLinkSettings(item);
 	}
+}
+
+function createItem(type, x = 0, y = 0) {
+	let newitem = null;
+	if (type == "text") {
+		newitem = addText(x, y);
+	} else if (type == "links") {
+		newitem = addLink(startX, startY, endX, endY) ;
+	}
+
+	if (newitem) {
+		items.push(newitem);
+	}
+	hideSettings();
+	drawItems();
 }
 
 function hideSettings() {
@@ -248,6 +246,27 @@ function drawItems() {
 			itemContext.fill();
 			itemContext.strokeStyle = "blue";
 			itemContext.stroke();
+
+			if (item.link_type === "external") {
+				itemContext.font = "12px Arial";
+				itemContext.fillStyle = "blue";
+				itemContext.fillText("External Link", item.x + 5, item.y + 15);
+				itemContext.fillText(item.link, item.x + 5, item.y + 30);
+			} else if (item.link_typ === "email") {
+				itemContext.font = "12px Arial";
+				itemContext.fillStyle = "blue";
+				itemContext.fillText("Email Link", item.x + 5, item.y + 15);
+				itemContext.fillText(item.link, item.x + 5, item.y + 30);
+			} else if (item.link_typ === "phone") {
+				itemContext.font = "12px Arial";
+				itemContext.fillStyle = "blue";
+				itemContext.fillText("Phone Link", item.x + 5, item.y + 15);
+				itemContext.fillText(item.link, item.x + 5, item.y + 30);
+			} else if (item.link_typ === "pdf") {
+				itemContext.font = "12px Arial";
+				itemContext.fillStyle = "blue";
+				itemContext.fillText("Internal PDF Link", item.x + 5, item.y + 15);
+			}
 		}
   }
 }
