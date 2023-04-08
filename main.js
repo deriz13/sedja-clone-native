@@ -57,6 +57,11 @@ itemCanvas.addEventListener('click', function(event) {
 		} else if (item.type == "links") {
 			var itemWidth = item.width;
 			var itemHeight = item.height;
+		} else if (item.type == "symbol") {
+			itemX = item.x - item.size;
+			itemY = item.y - item.size;
+			var itemWidth = item.size * 2;
+			var itemHeight = item.size * 2;
 		} else {
 			var itemWidth = 0
 			var itemHeight = 0;
@@ -74,6 +79,8 @@ itemCanvas.addEventListener('click', function(event) {
 		createItem("text", x, y);
 	} else if (selectedMenu == "links") {
 		return;
+	} else if (selectedMenu == "forms") {
+		createItem("symbol", x, y);
 	}
 	hideSettings();
 });
@@ -207,6 +214,8 @@ function showSettings(item) {
 		settingsPanel.innerHTML = generateTextSettings(item);
 	} else if (item.type == "links") {
 		settingsPanel.innerHTML = generateLinkSettings(item);
+	} else if (item.type == "symbol") {
+		settingsPanel.innerHTML = generateSymbolSettings(item);
 	}
 }
 
@@ -216,6 +225,8 @@ function createItem(type, x = 0, y = 0) {
 		newitem = addText(x, y);
 	} else if (type == "links") {
 		newitem = addLink(startX, startY, endX, endY) ;
+	} else if (type == "symbol") {
+		newitem = addSymbol(x, y);
 	}
 
 	if (newitem) {
@@ -267,6 +278,28 @@ function drawItems() {
 				itemContext.fillStyle = "blue";
 				itemContext.fillText("Internal PDF Link", item.x + 5, item.y + 15);
 			}
+		} else if (item.type == "symbol") {
+			itemContext.save();
+			itemContext.translate(item.x, item.y);
+			itemContext.rotate(item.rotation * Math.PI / 180);
+			itemContext.beginPath();
+
+			if (item.symbol_type === "check") {
+				itemContext.moveTo(-item.size/2, 0);
+				itemContext.lineTo(-item.size/6, item.size/3);
+				itemContext.lineTo(item.size/2, -item.size/3);
+			} else if (item.symbol_type === "cross") {
+				itemContext.moveTo(-item.size/2, -item.size/2);
+				itemContext.lineTo(item.size/2, item.size/2);
+				itemContext.moveTo(item.size/2, -item.size/2);
+				itemContext.lineTo(-item.size/2, item.size/2);
+			} else if (item.symbol_type === "dot") {
+				itemContext.arc(0, 0, item.size/2, 0, 2*Math.PI);
+				itemContext.fill();
+			}
+
+			itemContext.stroke();
+			itemContext.restore();
 		}
   }
 }

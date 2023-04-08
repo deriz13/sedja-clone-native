@@ -3,6 +3,7 @@
 <head>
 	<title>Upload dan Tampil PDF di Canvas</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
 	<input type="file" id="pdf-file" accept="application/pdf"><br><br>
@@ -17,6 +18,8 @@
     <button class="btn-menu" value="shapes">Shapes</button>
     <button class="btn-menu" value="more">More</button>
   </div><br>
+  <div id="submenu"></div>
+
   <input type="text" name="selected" id="selected" readonly><br><br>
   
   <div id="action"></div>
@@ -30,6 +33,7 @@
   <script src="menu.js"></script>
   <script src="text.js"></script>
   <script src="links.js"></script>
+  <script src="form.js"></script>
   <script src="main.js"></script>
   
 </body>
