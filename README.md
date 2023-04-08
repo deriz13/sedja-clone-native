@@ -10,20 +10,20 @@
 - [x] Link | resize rectangle link shape
 - [x] Link | option link type (external, email, phone, internal)*
 - [x] Link | action delete link *
-- [ ] Forms | Add non interactive font (text & symbol (x, v, .))
-- [ ] Forms | action non interactive symbol (rotate, delete)*
-- [ ] Forms | Add textbox
+- [x] Forms | Add non interactive font (text & symbol (x, v, .))
+- [x] Forms | action non interactive symbol (rotate, delete)*
+- [x] Forms | Add textbox
 - [ ] Forms | edit size textbox, input text on textbox
-- [ ] Forms | Action textbox (border color, text alignment, font size, field properties, duplicate, delete)*
-- [ ] Forms | Add textarea
+- [x] Forms | Action textbox (border color, text alignment, font size, field properties, duplicate, delete)*
+- [x] Forms | Add textarea
 - [ ] Forms | edit size textarea, input text on textarea
-- [ ] Forms | Action textarea (border color, text alignment, font size, field properties, duplicate, delete)*
-- [ ] Forms | Add radio
+- [x] Forms | Action textarea (border color, text alignment, font size, field properties, duplicate, delete)*
+- [x] Forms | Add radio
 - [ ] Forms | edit size radio, selected on radio
-- [ ] Forms | Action radio (border color, field properties, duplicate, delete)*
-- [ ] Forms | Add checkbox
+- [x] Forms | Action radio (border color, field properties, duplicate, delete)*
+- [x] Forms | Add checkbox
 - [ ] Forms | edit size checkbox, selected on checkbox
-- [ ] Forms | Action checkbox (border color, field properties, duplicate, delete)*
+- [x] Forms | Action checkbox (border color, field properties, duplicate, delete)*
 - [ ] Forms | Add dropdown
 - [ ] Forms | edit size dropdown, selected option on dropdown
 - [ ] Forms | Action dropdown (border color, text alignment, font size, field properties, duplicate, delete)*

@@ -13,6 +13,14 @@ var mouse = {
 };
 var startX, startY, endX, endY;
 var isDrawing = false;
+let isDragging = false;
+let dragOffsetX = 0;
+let dragOffsetY = 0;
+
+itemCanvas.width = 500;
+itemCanvas.height = 800;
+pdfCanvas.width = 500;
+pdfCanvas.height = 800;
 
 pdfFile.addEventListener('change', function() {
 	const file = pdfFile.files[0];
@@ -47,14 +55,14 @@ itemCanvas.addEventListener('click', function(event) {
 	var x = event.offsetX;
 	var y = event.offsetY;
   for (var i = items.length - 1; i >= 0; i--) {
-	console.log(items)
+		console.log(items)
     var item = items[i];
     var itemX = item.x;
     var itemY = item.y;
 		if (item.type == "text") {
 			var itemWidth = itemContext.measureText(item.text).width;
 			var itemHeight = parseInt(item.fontSize);
-		} else if (item.type == "links") {
+		} else if (item.type == "links" || item.type == "forms") {
 			var itemWidth = item.width;
 			var itemHeight = item.height;
 		} else if (item.type == "symbol") {
@@ -91,7 +99,10 @@ itemCanvas.addEventListener("mousedown", function (evt) {
   checkForSelectedItem();
 
 	if (editingItem) {
-		itemCanvas.addEventListener("mousemove", moveSelectedItem(evt));
+		isDragging = true;
+		dragOffsetX = mouse.x - editingItem.x;
+		dragOffsetY = mouse.y - editingItem.y;
+
 	} else {
 		if (selectedMenu == "links") {
 			startDraw(evt);
@@ -100,16 +111,14 @@ itemCanvas.addEventListener("mousedown", function (evt) {
 }, false);
 
 itemCanvas.addEventListener("mousemove", draw);
+itemCanvas.addEventListener("mousemove", moveSelectedItem);
 
 itemCanvas.addEventListener("mouseup", function (evt) {
 	const selectedMenu = document.getElementById('selected').value;
-	if (editingItem) {
-		itemCanvas.addEventListener("mousemove", moveSelectedItem(evt));
-	} else {
-		if (selectedMenu == "links") {
-			endDraw(evt);
-		}
+	if (!editingItem && selectedMenu == "links") {
+		endDraw(evt);
 	}
+	isDragging = false;
 
 }, false);
 
@@ -154,12 +163,10 @@ function checkForSelectedItem() {
 	  var x = item.x;
 	  // var y = item.y - parseInt(item.fontSize);
 	  var y = item.y;
-	  // var width = itemContext.measureText(item.text).width;
-	  // var height = parseInt(item.fontSize);
 		if (item.type == "text") {
 			var width = itemContext.measureText(item.text).width;
 			var height = parseInt(item.fontSize);
-		} else if (item.type == "links") {
+		} else if (item.type == "links" || item.type == "forms") {
 			var width = item.width;
 			var height = item.height;
 		} else {
@@ -168,10 +175,10 @@ function checkForSelectedItem() {
 		}	
 		
 	  if (
-		mouse.x >= x &&
-		mouse.x <= x + width &&
-		mouse.y >= y &&
-		mouse.y <= y + height
+			mouse.x >= x &&
+			mouse.x <= x + width &&
+			mouse.y >= y &&
+			mouse.y <= y + height
 	  ) {
 		editingItem = item;
 		return;
@@ -181,19 +188,11 @@ function checkForSelectedItem() {
 }
 
 function moveSelectedItem(evt) {
-	console.log("move")
-	var mousePos = getMousePos(itemCanvas, evt);
-	var dx = mousePos.x - mouse.x;
-	var dy = mousePos.y - mouse.y;
-  
-	if (editingItem) {
-	  // selectedTextItem.x = mouse.x;
-	  // selectedTextItem.y = mouse.y;
-	  editingItem.x += dx;
-	  editingItem.y += dy;
-	  mouse.x = mousePos.x;
-	  mouse.y = mousePos.y;
-	  drawItems();
+	if (isDragging) {
+		var mousePos = getMousePos(itemCanvas, evt);
+		editingItem.x = mousePos.x - dragOffsetX;
+		editingItem.y = mousePos.y - dragOffsetY;
+		drawItems();
 	}
 }
 
@@ -216,7 +215,19 @@ function showSettings(item) {
 		settingsPanel.innerHTML = generateLinkSettings(item);
 	} else if (item.type == "symbol") {
 		settingsPanel.innerHTML = generateSymbolSettings(item);
+	} else if (item.type == "forms") {
+		settingsPanel.innerHTML = generateFormSettings(item);
 	}
+}
+
+function duplicateItem() {
+  if (editingItem) {
+    let newElement = Object.assign({}, editingItem);
+    newElement.x += 10;
+    newElement.y += 10;
+    items.push(newElement);
+		drawItems();
+  }
 }
 
 function createItem(type, x = 0, y = 0) {
@@ -227,6 +238,8 @@ function createItem(type, x = 0, y = 0) {
 		newitem = addLink(startX, startY, endX, endY) ;
 	} else if (type == "symbol") {
 		newitem = addSymbol(x, y);
+	} else if (["textbox", "textarea", "radio", "checkbox"].includes(type)) {
+		newitem = addForm(type);
 	}
 
 	if (newitem) {
@@ -300,6 +313,29 @@ function drawItems() {
 
 			itemContext.stroke();
 			itemContext.restore();
+		} else if (item.type == "forms") {
+			itemContext.beginPath();
+			itemContext.rect(item.x, item.y, item.width, item.height);
+			itemContext.strokeStyle = item.borderColor;
+			itemContext.stroke();
+
+			if (item.form_type === "textbox" || item.form_type === "textarea") {
+				itemContext.textAlign = item.textAlignment;
+				itemContext.font = item.fontSize + 'px Arial';
+			}
+			if (item.form_type === "textarea") {
+				itemContext.fillText('Textarea', item.x + 10, item.y + 20);
+			} else if (item.form_type === "radio") {
+				itemContext.arc(item.x + 10, item.y + 10, 5, 0, 2 * Math.PI);
+				itemContext.stroke();
+				itemContext.fillText('Radio Button', item.x + 20, item.y + 15);
+			} else if (item.form_type === "checkbox") {
+				itemContext.rect(item.x + 5, item.y + 5, 10, 10);
+				itemContext.stroke();
+				itemContext.fillText('Checkbox Button', item.x + 20, item.y + 15);
+			} else {
+				itemContext.fillText('Textbox', item.x + 10, item.y + 15);
+			}
 		}
   }
 }

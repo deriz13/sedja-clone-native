@@ -18,11 +18,22 @@ menu.forEach(item => {
     }
   
     console.log(item.value);
+    editingItem = null;
   });
 });
 
 const submenuItem = {
-  forms: `<button id="checkButton" onclick="setSymbol('check')"><i class="fas fa-check"></i></button>
+  forms: `
+  <div>
+    <button id="checkButton" onclick="setSymbol('check')"><i class="fas fa-check"></i></button>
     <button id="crossButton" onclick="setSymbol('cross')"><i class="fas fa-times"></i></button>
-    <button id="dotButton" onclick="setSymbol('dot')"><i class="fas fa-circle"></i></button>`
+    <button id="dotButton" onclick="setSymbol('dot')"><i class="fas fa-circle"></i></button>
+  </div>
+  <div>
+    <button onclick="createItem('textbox')">Add Textbox</button>
+	  <button onclick="createItem('textarea')">Add Textarea</button>
+	  <button onclick="createItem('radio')">Add Radio Button</button>
+	  <button onclick="createItem('checkbox')">Add Checkbox Button</button>
+  </div>
+  `
 }
