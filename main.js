@@ -62,7 +62,7 @@ itemCanvas.addEventListener('click', function(event) {
 		if (item.type == "text") {
 			var itemWidth = itemContext.measureText(item.text).width;
 			var itemHeight = parseInt(item.fontSize);
-		} else if (item.type == "links" || item.type == "forms") {
+		} else if (["links", "forms", "image"].includes(item.type)) {
 			var itemWidth = item.width;
 			var itemHeight = item.height;
 		} else if (item.type == "symbol") {
@@ -122,6 +122,7 @@ itemCanvas.addEventListener("mouseup", function (evt) {
 
 }, false);
 
+
 function startDraw(e) {
 	startX = e.offsetX;
 	startY = e.offsetY;
@@ -166,7 +167,7 @@ function checkForSelectedItem() {
 		if (item.type == "text") {
 			var width = itemContext.measureText(item.text).width;
 			var height = parseInt(item.fontSize);
-		} else if (item.type == "links" || item.type == "forms") {
+		} else if (item.type == "links" || item.type == "forms"  || item.type == "image") {
 			var width = item.width;
 			var height = item.height;
 		} else {
@@ -217,6 +218,8 @@ function showSettings(item) {
 		settingsPanel.innerHTML = generateSymbolSettings(item);
 	} else if (item.type == "forms") {
 		settingsPanel.innerHTML = generateFormSettings(item);
+	} else if (item.type == "image") {
+		settingsPanel.innerHTML = generateImageSettings(item);
 	}
 }
 
@@ -240,6 +243,30 @@ function createItem(type, x = 0, y = 0) {
 		newitem = addSymbol(x, y);
 	} else if (["textbox", "textarea", "radio", "checkbox"].includes(type)) {
 		newitem = addForm(type);
+	} else if (type == "image") {
+		const input = document.getElementById("image-input");
+  	const file = input.files[0];
+
+  	if (!file.type.match("image.*")) {
+  	  alert("Only image files are allowed.");
+  	  return;
+  	}
+
+  	const reader = new FileReader();
+  	reader.onload = function(e) {
+  	  const img = new Image();
+  	  img.onload = function() {
+				newitem = addImage(img);
+
+				if (newitem) {
+					items.push(newitem);
+				}
+				hideSettings();
+				drawItems();
+  	  };
+  	  img.src = e.target.result;
+  	};
+  	reader.readAsDataURL(file);
 	}
 
 	if (newitem) {
@@ -336,6 +363,8 @@ function drawItems() {
 			} else {
 				itemContext.fillText('Textbox', item.x + 10, item.y + 15);
 			}
+		} else if (item.type == "image") {
+			itemContext.drawImage(item.src, item.x, item.y, item.width, item.height);
 		}
   }
 }

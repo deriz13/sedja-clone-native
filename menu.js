@@ -11,7 +11,9 @@ menu.forEach(item => {
       document.querySelector('#selected').value = item.value;
       if (submenuItem[item.value]) {
         submenu.innerHTML = submenuItem[item.value];
-      }
+      } else {
+        submenu.innerHTML = "";
+      } 
     } else {
       item.classList.remove('active');
       document.querySelector('#selected').value = "";
@@ -24,16 +26,23 @@ menu.forEach(item => {
 
 const submenuItem = {
   forms: `
-  <div>
-    <button id="checkButton" onclick="setSymbol('check')"><i class="fas fa-check"></i></button>
-    <button id="crossButton" onclick="setSymbol('cross')"><i class="fas fa-times"></i></button>
-    <button id="dotButton" onclick="setSymbol('dot')"><i class="fas fa-circle"></i></button>
-  </div>
-  <div>
-    <button onclick="createItem('textbox')">Add Textbox</button>
-	  <button onclick="createItem('textarea')">Add Textarea</button>
-	  <button onclick="createItem('radio')">Add Radio Button</button>
-	  <button onclick="createItem('checkbox')">Add Checkbox Button</button>
-  </div>
+    <div>
+      <button id="checkButton" onclick="setSymbol('check')"><i class="fas fa-check"></i></button>
+      <button id="crossButton" onclick="setSymbol('cross')"><i class="fas fa-times"></i></button>
+      <button id="dotButton" onclick="setSymbol('dot')"><i class="fas fa-circle"></i></button>
+    </div>
+    <div>
+      <button onclick="createItem('textbox')">Add Textbox</button>
+	    <button onclick="createItem('textarea')">Add Textarea</button>
+	    <button onclick="createItem('radio')">Add Radio Button</button>
+	    <button onclick="createItem('checkbox')">Add Checkbox Button</button>
+    </div>
+  `,
+  images:  `
+    <input type="file" id="image-input">
+    <button onclick="createItem('image')">Add Image</button>
+    <div>
+      <ul id="image-list"></ul>
+    </div>
   `
 }
