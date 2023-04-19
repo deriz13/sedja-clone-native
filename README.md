@@ -52,5 +52,5 @@
 - [ ] More | Find & Replace
 - [ ] More | Undo
 - [ ] PDF can save to server and can access by unique link
-- [ ] PDF can add "sign container"
-- [ ] PDF saved can add signature by click at "sign container"
+- [x] PDF can add "sign container"
+- [x] PDF saved can add signature by click at "sign container"

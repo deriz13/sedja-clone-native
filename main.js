@@ -62,7 +62,7 @@ itemCanvas.addEventListener('click', function(event) {
 		if (item.type == "text") {
 			var itemWidth = itemContext.measureText(item.text).width;
 			var itemHeight = parseInt(item.fontSize);
-		} else if (["links", "forms", "image", "witheout", "shape"].includes(item.type)) {
+		} else if (["links", "forms", "image", "witheout", "shape", "sign-container"].includes(item.type)) {
 			var itemWidth = item.width;
 			var itemHeight = item.height;
 		} else if (item.type == "symbol") {
@@ -83,13 +83,15 @@ itemCanvas.addEventListener('click', function(event) {
 			showSettings(item);
       return;
     } else {
-			editingItem = null;
-			drawItems();
+			if (editingItem) {
+				editingItem = null;
+				drawItems();
+			}
 		}
   }
 	if (selectedMenu == "text") {
 		createItem("text", x, y);
-	} else if (selectedMenu == "links" || selectedMenu == "witheout" ) {
+	} else if (selectedMenu == "links" || selectedMenu == "witheout" || selectedMenu == "sign-click" ) {
 		return;
 	} else if (selectedMenu == "forms") {
 		createItem("symbol", x, y);
@@ -108,7 +110,7 @@ itemCanvas.addEventListener("mousedown", function (evt) {
 		dragOffsetY = mouse.y - editingItem.y;
 
 	} else {
-		if (selectedMenu == "links" || selectedMenu == "witheout") {
+		if (selectedMenu == "links" || selectedMenu == "witheout" || selectedMenu == "sign-click") {
 			startDraw(evt);
 		}
 	}
@@ -119,13 +121,23 @@ itemCanvas.addEventListener("mousemove", moveSelectedItem);
 
 itemCanvas.addEventListener("mouseup", function (evt) {
 	const selectedMenu = document.getElementById('selected').value;
-	if (!editingItem && (selectedMenu == "links" || selectedMenu == "witheout")) {
+	if (!editingItem && (selectedMenu == "links" || selectedMenu == "witheout" || selectedMenu == "sign-click")) {
 		endDraw(evt);
 	}
 	isDragging = false;
 
 }, false);
 
+
+itemCanvas.addEventListener("dblclick", function (evt) {
+	mouse = getMousePos(itemCanvas, evt);
+  checkForSelectedItem();
+
+	if (editingItem && editingItem.type == "sign-container") {
+		editingItem.signed = true;
+		drawItems();
+	}
+});
 
 function startDraw(e) {
 	startX = e.offsetX;
@@ -149,7 +161,7 @@ function draw(e) {
 function endDraw(e) {
 	const selectedMenu = document.getElementById('selected').value;
 	isDrawing = false;
-	if (selectedMenu == "links" || selectedMenu == "witheout") {
+	if (selectedMenu == "links" || selectedMenu == "witheout" || selectedMenu == "sign-click") {
 		showSettings({type: selectedMenu});
 	}
 }
@@ -171,7 +183,7 @@ function checkForSelectedItem() {
 		if (item.type == "text") {
 			var width = itemContext.measureText(item.text).width;
 			var height = parseInt(item.fontSize);
-		} else if (["links", "forms", "image", "witheout", "shape"].includes(item.type)) {
+		} else if (["links", "forms", "image", "witheout", "shape", "sign-container"].includes(item.type)) {
 			var width = item.width;
 			var height = item.height;
 		} else {
@@ -228,6 +240,8 @@ function showSettings(item) {
 		settingsPanel.innerHTML = generateWitheoutSettings(item);
 	} else if (item.type == "shape") {
 		settingsPanel.innerHTML = generateShapeSettings(item);
+	} else if (item.type == "sign-click") {
+		settingsPanel.innerHTML = generateSignClickSettings(item);
 	}
 }
 
@@ -284,7 +298,9 @@ function createItem(type, x = 0, y = 0) {
 		newitem = addWitheout(startX, startY, endX, endY);
 	} else if (type == "box" || type == "circle") {
 		newitem = addShape(type);
-	} 
+	} else if (type == "sign-container") {
+		newitem = addSignContainer(startX, startY, endX, endY);
+	}
 
 	if (newitem) {
 		items.push(newitem);
@@ -402,6 +418,21 @@ function drawItems() {
 			itemContext.stroke();
 			itemContext.fillStyle = item.backgroundColor;
 			itemContext.fill();
+		} else if (item.type == "sign-container") {
+			itemContext.beginPath();
+			itemContext.rect(item.x, item.y, item.width, item.height);
+			itemContext.fillStyle = item.backgroundColor;
+			itemContext.fill();
+			itemContext.lineWidth = item.borderWidth;
+			itemContext.strokeStyle = item.borderColor;
+			itemContext.stroke();
+
+			if (item.signed) {
+				itemContext.beginPath();
+				itemContext.arc(item.x + item.width/2, item.y + item.height/2, item.width/4, 0, 2 * Math.PI);
+				itemContext.fillStyle = "black";
+				itemContext.fill();
+			}
 		}
   }
 
