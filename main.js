@@ -62,7 +62,7 @@ itemCanvas.addEventListener('click', function(event) {
 		if (item.type == "text") {
 			var itemWidth = itemContext.measureText(item.text).width;
 			var itemHeight = parseInt(item.fontSize);
-		} else if (["links", "forms", "image"].includes(item.type)) {
+		} else if (["links", "forms", "image", "witheout"].includes(item.type)) {
 			var itemWidth = item.width;
 			var itemHeight = item.height;
 		} else if (item.type == "symbol") {
@@ -85,7 +85,7 @@ itemCanvas.addEventListener('click', function(event) {
   }
 	if (selectedMenu == "text") {
 		createItem("text", x, y);
-	} else if (selectedMenu == "links") {
+	} else if (selectedMenu == "links" || selectedMenu == "witheout" ) {
 		return;
 	} else if (selectedMenu == "forms") {
 		createItem("symbol", x, y);
@@ -104,7 +104,7 @@ itemCanvas.addEventListener("mousedown", function (evt) {
 		dragOffsetY = mouse.y - editingItem.y;
 
 	} else {
-		if (selectedMenu == "links") {
+		if (selectedMenu == "links" || selectedMenu == "witheout") {
 			startDraw(evt);
 		}
 	}
@@ -115,7 +115,7 @@ itemCanvas.addEventListener("mousemove", moveSelectedItem);
 
 itemCanvas.addEventListener("mouseup", function (evt) {
 	const selectedMenu = document.getElementById('selected').value;
-	if (!editingItem && selectedMenu == "links") {
+	if (!editingItem && (selectedMenu == "links" || selectedMenu == "witheout")) {
 		endDraw(evt);
 	}
 	isDragging = false;
@@ -145,8 +145,8 @@ function draw(e) {
 function endDraw(e) {
 	const selectedMenu = document.getElementById('selected').value;
 	isDrawing = false;
-	if (selectedMenu == "links") {
-		showSettings({type: "links"});
+	if (selectedMenu == "links" || selectedMenu == "witheout") {
+		showSettings({type: selectedMenu});
 	}
 }
 
@@ -167,7 +167,7 @@ function checkForSelectedItem() {
 		if (item.type == "text") {
 			var width = itemContext.measureText(item.text).width;
 			var height = parseInt(item.fontSize);
-		} else if (item.type == "links" || item.type == "forms"  || item.type == "image") {
+		} else if (["links", "forms", "image", "witheout"].includes(item.type)) {
 			var width = item.width;
 			var height = item.height;
 		} else {
@@ -220,10 +220,17 @@ function showSettings(item) {
 		settingsPanel.innerHTML = generateFormSettings(item);
 	} else if (item.type == "image") {
 		settingsPanel.innerHTML = generateImageSettings(item);
+	} else if (item.type == "witheout") {
+		settingsPanel.innerHTML = generateWitheoutSettings(item);
 	}
 }
 
 function duplicateItem() {
+	if (!editingItem) {
+		alert("Please select item to duplicate.");
+		return;
+	}
+
   if (editingItem) {
     let newElement = Object.assign({}, editingItem);
     newElement.x += 10;
@@ -267,7 +274,9 @@ function createItem(type, x = 0, y = 0) {
   	  img.src = e.target.result;
   	};
   	reader.readAsDataURL(file);
-	}
+	} else if (type == "witheout") {
+		newitem = addWitheout(startX, startY, endX, endY);
+	} 
 
 	if (newitem) {
 		items.push(newitem);
@@ -365,6 +374,14 @@ function drawItems() {
 			}
 		} else if (item.type == "image") {
 			itemContext.drawImage(item.src, item.x, item.y, item.width, item.height);
+		} else if (item.type == "witheout") {
+			itemContext.beginPath();
+			itemContext.rect(item.x, item.y, item.width, item.height);
+			itemContext.fillStyle = item.backgroundColor;
+			itemContext.fill();
+			itemContext.lineWidth = item.borderWidth;
+			itemContext.strokeStyle = item.borderColor;
+			itemContext.stroke();
 		}
   }
 }
