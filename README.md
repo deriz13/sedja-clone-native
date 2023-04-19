@@ -28,25 +28,25 @@
 - [ ] Forms | edit size dropdown, selected option on dropdown
 - [ ] Forms | Action dropdown (border color, text alignment, font size, field properties, duplicate, delete)*
 - [ ] Images | Add image placeholder  
-- [ ] Images | Add upload image
-- [ ] Images | List uploaded image, and placeholder with delete
+- [x] Images | Add upload image
+- [x] Images | List uploaded image, and placeholder with delete
 - [ ] Images | edit size image
-- [ ] Images | action image (rotate, delete)
+- [x] Images | action image (rotate, delete)
 - [ ] Sign | Add image sign placeholder  
 - [ ] Sign | Add new signature* | New Signature menu (Type, Draw, upload image, camera)
 - [ ] Sign | List created signature, and placeholder signature with delete
 - [ ] Sign | edit size signature
 - [ ] Sign | action signature (rotate, delete)
-- [ ] Witheout | rectangle white can draw by mouse
+- [x] Witheout | rectangle white can draw by mouse
 - [ ] Witheout | resize rectangle white shape
-- [ ] Witheout | action witheout (border width, border color,background color, duplicate, delete) *
+- [x] Witheout | action witheout (border width, border color,background color, duplicate, delete) *
 - [ ] Anotate | Strike out, highlight, underline
 - [ ] Anotate | Strike out, highlight, underline action (change color, hide all anotations, remove)*
 - [ ] Anotate | highlight free hand, draw
 - [ ] Anotate | highlight free hand, draw action (line width, change color, hide all anotations, remove)*
 - [ ] Anotate | Hide annotations
-- [ ] Shapes | draw ellipse, rectangle
-- [ ] Shapes | ellipse, rectangle action (border width, border color, background color, duplicate, delete)*
+- [x] Shapes | draw ellipse, rectangle
+- [x] Shapes | ellipse, rectangle action (border width, border color, background color, duplicate, delete)*
 - [ ] Shapes | draw line, arrow
 - [ ] Shapes | line, arrow action (line width, color, duplicate, delete)
 - [ ] More | Find & Replace

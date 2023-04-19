@@ -62,7 +62,7 @@ itemCanvas.addEventListener('click', function(event) {
 		if (item.type == "text") {
 			var itemWidth = itemContext.measureText(item.text).width;
 			var itemHeight = parseInt(item.fontSize);
-		} else if (["links", "forms", "image", "witheout"].includes(item.type)) {
+		} else if (["links", "forms", "image", "witheout", "shape"].includes(item.type)) {
 			var itemWidth = item.width;
 			var itemHeight = item.height;
 		} else if (item.type == "symbol") {
@@ -77,11 +77,15 @@ itemCanvas.addEventListener('click', function(event) {
 
     if (x >= itemX && x <= itemX + itemWidth && y >= itemY && y <= itemY + itemHeight) {
 			editingItem = item;
+			drawItems();
 			console.log(item.type);
 			hideSettings();
 			showSettings(item);
       return;
-    }
+    } else {
+			editingItem = null;
+			drawItems();
+		}
   }
 	if (selectedMenu == "text") {
 		createItem("text", x, y);
@@ -167,7 +171,7 @@ function checkForSelectedItem() {
 		if (item.type == "text") {
 			var width = itemContext.measureText(item.text).width;
 			var height = parseInt(item.fontSize);
-		} else if (["links", "forms", "image", "witheout"].includes(item.type)) {
+		} else if (["links", "forms", "image", "witheout", "shape"].includes(item.type)) {
 			var width = item.width;
 			var height = item.height;
 		} else {
@@ -222,6 +226,8 @@ function showSettings(item) {
 		settingsPanel.innerHTML = generateImageSettings(item);
 	} else if (item.type == "witheout") {
 		settingsPanel.innerHTML = generateWitheoutSettings(item);
+	} else if (item.type == "shape") {
+		settingsPanel.innerHTML = generateShapeSettings(item);
 	}
 }
 
@@ -276,6 +282,8 @@ function createItem(type, x = 0, y = 0) {
   	reader.readAsDataURL(file);
 	} else if (type == "witheout") {
 		newitem = addWitheout(startX, startY, endX, endY);
+	} else if (type == "box" || type == "circle") {
+		newitem = addShape(type);
 	} 
 
 	if (newitem) {
@@ -382,6 +390,28 @@ function drawItems() {
 			itemContext.lineWidth = item.borderWidth;
 			itemContext.strokeStyle = item.borderColor;
 			itemContext.stroke();
+		} else if (item.type == "shape") {
+			itemContext.beginPath();
+			if (item.shape_type === "box") {
+				itemContext.rect(item.x, item.y, item.width, item.height);
+			} else if (item.shape_type === "circle") {
+				itemContext.arc(item.x + item.width/2, item.y + item.height/2, item.width/2, 0, 2*Math.PI);
+			}
+			itemContext.lineWidth = item.borderWidth;
+			itemContext.strokeStyle = item.borderColor;
+			itemContext.stroke();
+			itemContext.fillStyle = item.backgroundColor;
+			itemContext.fill();
 		}
   }
+
+	if (editingItem) {
+		itemContext.beginPath();
+		itemContext.rect(editingItem.x-5, editingItem.y-5, 10, 10);
+		itemContext.rect(editingItem.x+editingItem.width-5, editingItem.y-5, 10, 10);
+		itemContext.rect(editingItem.x-5, editingItem.y+editingItem.height-5, 10, 10);
+		itemContext.rect(editingItem.x+editingItem.width-5, editingItem.y+editingItem.height-5, 10, 10);
+		itemContext.strokeStyle = "#000000";
+		itemContext.stroke();
+	}
 }

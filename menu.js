@@ -44,5 +44,11 @@ const submenuItem = {
     <div>
       <ul id="image-list"></ul>
     </div>
-  `
+  `,
+  shapes: `
+    <div>
+      <button onclick="createItem('box')">Create Box</button>
+      <button onclick="createItem('circle')">Create Circle</button>
+    </div>
+  `,
 }
