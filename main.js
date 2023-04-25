@@ -25,6 +25,7 @@ pdfCanvas.height = 800;
 pdfFile.addEventListener('change', function() {
 	const file = pdfFile.files[0];
 	const fileReader = new FileReader();
+	console.log(file);
 
 	fileReader.onload = function() {
 		const typedArray = new Uint8Array(this.result);

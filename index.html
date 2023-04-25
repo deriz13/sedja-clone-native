@@ -6,7 +6,13 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
-	<input type="file" id="pdf-file" accept="application/pdf"><br><br>
+  <div style="margin: auto;">
+    <input type="file" id="pdf-file" accept="application/pdf">
+    <button class="save" onclick="saveFile()">Save</button>
+    <input type="text" id="id-docs">
+    <button class="load" onclick="loadFile()">Load</button>
+  </div>
+  <hr>
   <div>
     <button class="btn-menu" value="text">Text</button>
     <button class="btn-menu" value="links">Links</button>
@@ -21,14 +27,31 @@
   </div><br>
   <div id="submenu"></div>
 
-  <input type="text" name="selected" id="selected" readonly><br><br>
+  <input type="hidden" name="selected" id="selected" readonly>
   
   <div id="action"></div>
 
-  <div style="position: relative;">
-    <canvas id="pdf-canvas" style="position: absolute; left: 0; top: 0; z-index: 0;"></canvas>
-    <canvas id="item-canvas" style="position: absolute; left: 0; top: 0; z-index: 1;"></canvas>
+  <div class="parent-container">
+    <div class="canvas-wrapper">
+      <canvas id="pdf-canvas"></canvas>
+      <canvas id="item-canvas"></canvas>
+    </div>
   </div>
+
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-storage.js"></script>
+  <script>
+    var firebaseConfig = {
+      apiKey: "AIzaSyCoEFxvwxh28wkykfPcc9DGo2epn8WkP_Y",
+      authDomain: "sedja-clone.firebaseapp.com",
+      projectId: "sedja-clone",
+      storageBucket: "sedja-clone.appspot.com",
+    };
+    firebase.initializeApp(firebaseConfig);
+    var db = firebase.firestore();
+  </script>
+
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
   <script src="menu.js"></script>
@@ -40,6 +63,94 @@
   <script src="shape.js"></script>
   <script src="sign-click.js"></script>
   <script src="main.js"></script>
+
+  <script>
+    function saveFile() {
+
+      if (pdfFile) {
+        const file = pdfFile.files[0];
+
+        const storageRef = firebase.storage().ref().child(file.name);
+        const docRef = db.collection("docs").doc();
+
+        storageRef.put(file).then((snapshot) => {
+          console.log("File berhasil diunggah ke Firebase Storage");
+          snapshot.ref.getDownloadURL().then(function(downloadURL) {
+            // Menyimpan data dokumen Firestore
+            docRef.set({
+              date: new Date(),
+              file: file.name,
+              url: downloadURL,
+              items: items
+            }).then(() => {
+              console.log("Data dokumen berhasil disimpan ke Firestore");
+            }).catch((error) => {
+              console.log(`Error saat menyimpan dokumen ke Firestore: ${error}`);
+            });
+          })
+        }).catch((error) => {
+          console.log(`Error saat mengunggah file ke Firebase Storage: ${error}`);
+        });
+        return;
+      }
+
+
+      db.collection("docs").add({
+        date: new Date(),
+        items: items
+      }).then(function(docRef) {
+        console.log("Dokumen berhasil ditambahkan dengan ID: ", docRef.id);
+      })
+      .catch(function(error) {
+          console.error("Terjadi kesalahan: ", error);
+      });
+    }
+
+    function loadFile() {
+      docId = document.getElementById("id-docs").value;
+      const docRef = db.collection("docs").doc(docId);
+      docRef.get().then((doc) => {
+        if (doc.exists) {
+          console.log(`Data dokumen dengan ID ${docId}: `, doc.data());
+
+          if (doc.data().url) {
+            // var url = 'https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/examples/learning/helloworld.pdf';
+            var pdfjsLib = window['pdfjs-dist/build/pdf'];
+            pdfjsLib.getDocument({
+              url: doc.data().url, 
+              mode: 'no-cors'
+            }).promise.then(function(pdf) {
+		        	pdf.getPage(1).then(function(page) {
+		        		const viewport = page.getViewport({scale: 1});
+		        		pdfCanvas.width = viewport.width;
+		        		pdfCanvas.height = viewport.height;
+
+		        		itemCanvas.width = viewport.width;
+		        		itemCanvas.height = viewport.height;
+
+		        		page.render({
+		        			canvasContext: pdfContext,
+		        			viewport: viewport
+		        		});
+
+                items = doc.data().items;
+                console.log(items);
+		            drawItems();
+		        	});
+		        });
+          }
+
+          items = doc.data().items;
+          console.log(items);
+		      drawItems();
+        } else {
+          console.log(`Dokumen dengan ID ${docId} tidak ditemukan.`);
+        }
+      }).catch((error) => {
+        console.log(`Error saat mengambil dokumen: ${error}`);
+      });
+    }
+  </script>
   
 </body>
 </html>
