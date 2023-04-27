@@ -65,7 +65,7 @@
   <script src="../public/assets/js/main.js"></script>
 
   <script>
- function saveFile() {
+function saveFile() {
   var input = document.querySelector('input[type="file"]');
   var file = input.files[0];
   var formData = new FormData();
@@ -76,16 +76,49 @@
   xhr.open('POST', 'upload.php', true);
 
   xhr.onreadystatechange = function() {
-  if (this.readyState === XMLHttpRequest.DONE) {
-    if (this.status === 200) {
-      console.log("File berhasil diunggah ke direktori upload");
-      alert("File berhasil diunggah ke direktori upload");
-    } else {
-      console.log("Terjadi kesalahan saat mengunggah file: " + this.status);
-      alert("Terjadi kesalahan saat mengunggah file. Kode status: " + this.status);
+    if (this.readyState === XMLHttpRequest.DONE) {
+      if (this.status === 200) {
+        console.log("File berhasil diunggah ke direktori upload");
+        alert("File berhasil diunggah ke direktori upload");
+
+        // Mengambil response dari server
+        var response = JSON.parse(this.responseText);
+
+        // Jika pengiriman data berhasil, kirim data ke server database
+        if (response.success) {
+          var xhrDb = new XMLHttpRequest();
+          xhrDb.open('POST', 'koneksi.php', true);
+          xhrDb.setRequestHeader('Content-type', 'application/json');
+
+          var baseUrl = window.location.origin;
+          var relativeUrl = baseUrl + '/sedja-clone-native/upload/' + file.name;
+
+          var data = {
+            file: file.name,
+            url: relativeUrl,
+            items: JSON.stringify(items)
+          };
+
+          xhrDb.onreadystatechange = function() {
+            if (this.readyState === XMLHttpRequest.DONE) {
+              if (this.status === 200) {
+                console.log("Data berhasil disimpan ke database");
+                alert("Data berhasil disimpan ke database");
+              } else {
+                console.log("Terjadi kesalahan saat menyimpan data ke database: " + this.status);
+                alert("Terjadi kesalahan saat menyimpan data ke database. Kode status: " + this.status);
+              }
+            }
+          };
+
+          xhrDb.send(JSON.stringify(data));
+        }
+      } else {
+        console.log("Terjadi kesalahan saat mengunggah file: " + this.status);
+        alert("Terjadi kesalahan saat mengunggah file. Kode status: " + this.status);
+      }
     }
-  }
-};
+  };
 
   xhr.send(formData);
 }
@@ -135,7 +168,7 @@
         alert("Error saat mengambil dokumen");
         console.log(`Error saat mengambil dokumen: ${error}`);
       });
-    }A
+    }
   </script>
   
 </body>
