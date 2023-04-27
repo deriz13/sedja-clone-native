@@ -1,16 +1,30 @@
 <?php
-$host = "localhost"; // nama host mysql
-$username = "root"; // nama pengguna mysql
-$password = ""; // password mysql
-$database = "sedja_clone"; // nama database yang akan digunakan
+$host = "localhost";
+$user = "root";
+$password = "";
+$database = "sedja_clone";
 
-// membuat koneksi ke database
-$conn = mysqli_connect($host, $username, $password, $database);
+$conn = mysqli_connect($host, $user, $password, $database);
 
-// cek koneksi
-if (!$conn) {
-    die("Koneksi gagal: " . mysqli_connect_error());
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+  $data = json_decode(file_get_contents("php://input"));
+
+  $file = $data->file;
+  $items = $data->items;
+  $url = $data->url;
+
+  $query = "INSERT INTO docs (file, items, url) VALUES ('$file', '$items', '$url')";
+  $result = mysqli_query($conn, $query);
+
+  if ($result) {
+    $id = mysqli_insert_id($conn);
+    $response = array("success" => true, "id" => $id);
+    echo json_encode($response);
+  } else {
+    $response = array("success" => false);
+    echo json_encode($response);
+  }
 }
 
-echo "Koneksi berhasil";
+mysqli_close($conn);
 ?>

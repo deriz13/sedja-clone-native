@@ -54,62 +54,41 @@
 
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
-  <script src="menu.js"></script>
-  <script src="text.js"></script>
-  <script src="links.js"></script>
-  <script src="form.js"></script>
-  <script src="image.js"></script>
-  <script src="witheout.js"></script>
-  <script src="shape.js"></script>
-  <script src="sign-click.js"></script>
-  <script src="main.js"></script>
+  <script src="../public/assets/js/menu.js"></script>
+  <script src="../public/assets/js/text.js"></script>
+  <script src="../public/assets/js/links.js"></script>
+  <script src="../public/assets/js/form.js"></script>
+  <script src="../public/assets/js/image.js"></script>
+  <script src="../public/assets/js/witheout.js"></script>
+  <script src="../public/assets/js/shape.js"></script>
+  <script src="../public/assets/js/sign-click.js"></script>
+  <script src="../public/assets/js/main.js"></script>
 
   <script>
-    function saveFile() {
+ function saveFile() {
+  var input = document.querySelector('input[type="file"]');
+  var file = input.files[0];
+  var formData = new FormData();
 
-      if (pdfFile) {
-        const file = pdfFile.files[0];
+  formData.append('pdfFile', file);
 
-        const storageRef = firebase.storage().ref('upload/' + file.name);
-        const docRef = db.collection("docs").doc();
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', 'upload.php', true);
 
-        storageRef.put(file).then((snapshot) => {
-          console.log("File berhasil diunggah ke Firebase Storage");
-          snapshot.ref.getDownloadURL().then(function(downloadURL) {
-            db.collection("docs").add({
-              date: new Date(),
-              file: file.name,
-              url: downloadURL,
-              items: items
-            }).then(function(docRef) {
-              console.log("Dokumen berhasil ditambahkan dengan ID: ", docRef.id);
-              alert("Dokumen berhasil ditambahkan dengan ID: " + docRef.id);
-            })
-            .catch(function(error) {
-              alert("Terjadi kesalahan");
-              console.error("Terjadi kesalahan: ", error);
-            });
-          })
-        }).catch((error) => {
-          alert("Error saat mengunggah file ke Firebase Storage");
-          console.log(`Error saat mengunggah file ke Firebase Storage: ${error}`);
-        });
-        return;
-      }
-
-
-      db.collection("docs").add({
-        date: new Date(),
-        items: items
-      }).then(function(docRef) {
-        console.log("Dokumen berhasil ditambahkan dengan ID: ", docRef.id);
-        alert("Dokumen berhasil ditambahkan dengan ID: " + docRef.id);
-      })
-      .catch(function(error) {
-          alert("Terjadi kesalahan");
-          console.error("Terjadi kesalahan: ", error);
-      });
+  xhr.onreadystatechange = function() {
+  if (this.readyState === XMLHttpRequest.DONE) {
+    if (this.status === 200) {
+      console.log("File berhasil diunggah ke direktori upload");
+      alert("File berhasil diunggah ke direktori upload");
+    } else {
+      console.log("Terjadi kesalahan saat mengunggah file: " + this.status);
+      alert("Terjadi kesalahan saat mengunggah file. Kode status: " + this.status);
     }
+  }
+};
+
+  xhr.send(formData);
+}
 
     function loadFile() {
       docId = document.getElementById("id-docs").value;
